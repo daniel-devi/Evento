@@ -1,14 +1,12 @@
 import React from "react";
 
-type validatePasswordProps = {
-  password: string;
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-};
+
 
 function validatePassword({
-  password,
-  setErrorMessage,
-}: validatePasswordProps): boolean {
+
+  password: string,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
+}): boolean {
   // Default minimum and maximum password length
   const { minLength = 8, maxLength = 128 } = {};
 

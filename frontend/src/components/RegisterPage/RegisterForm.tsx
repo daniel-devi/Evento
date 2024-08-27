@@ -25,12 +25,10 @@ function RegisterForm() {
 
     const userUsername = "User" + generateUniqueId();
 
-
     const passwordValue = data.get("password");
     if (
       passwordValue &&
       typeof passwordValue === "string" &&
-
       validatePassword(passwordValue)
     ) {
       try {
