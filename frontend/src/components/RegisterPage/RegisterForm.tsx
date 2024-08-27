@@ -29,7 +29,7 @@ function RegisterForm() {
     if (
       passwordValue &&
       typeof passwordValue === "string" &&
-      validatePassword(passwordValue)
+      validatePassword(passwordValue, setPasswordErrorMessage)
     ) {
       try {
         const res: AxiosResponse = await api.post("api/user/register", {
@@ -59,7 +59,6 @@ function RegisterForm() {
         }
       }
     }
-
   };  return (
     <Box
       className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
