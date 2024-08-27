@@ -1,5 +1,6 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse } from "axios";
-import { ACCESS_TOKEN } from "../constants/apiConstants.js";
+// Constants for localStorage keys
+const ACCESS_TOKEN = "accessToken";
 
 // Gets the authentication token from localStorage
 const authToken = localStorage.getItem(ACCESS_TOKEN);

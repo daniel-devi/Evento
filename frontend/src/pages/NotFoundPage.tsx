@@ -3,9 +3,10 @@ import NotFound from "../components/NotFound";
 
 function NotFoundPage() {
   return (
-   <ColorModeProvider>
-   <NotFound />
-   </ColorModeProvider>
+    // Wrap the NotFound component with ColorModeProvider to ensure consistent theming
+    <ColorModeProvider>
+      <NotFound />
+    </ColorModeProvider>
   );
 }
 

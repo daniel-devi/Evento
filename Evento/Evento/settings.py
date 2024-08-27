@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
 load_dotenv()
 
 # Quick-start development settings - unsuitable for production
@@ -29,10 +30,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Allow all hosts for development, restrict this in production
 ALLOWED_HOSTS = ["*"]
 
 # Django-Restframework Configuration
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -53,38 +54,47 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 
 # Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # or your broker URL
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis broker URL
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
-CELERY_TASK_ALWAYS_EAGER = False  # If (True) Run tasks synchronously for testing and development
+CELERY_TASK_ALWAYS_EAGER = False  # Set to True to run tasks synchronously for testing
 
 # Application definition
-
 INSTALLED_APPS = [
-    'jazzmin',  # For Admin Panel Customization
+    'jazzmin',  # Admin panel customization
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Third-Party Application
-    "rest_framework", # For Creating Api from Database
-    "djoser", # For BASIC User Authentication API
-    "corsheaders", # To connect the Frontend without CRSF Orgin Attacks
-    'all-auth', # For All Authentication
-    'django_celery_beat', # For Scheduling ASYNC Tasks
-    # Django-Applications
+    # Third-Party Applications
+    "rest_framework",  # API framework
+    "djoser",  # User authentication API
+    "corsheaders",  # Handle CORS
+    'allauth',  # Authentication
+    'allauth.account',
+    'django_celery_beat',  # Scheduling async tasks
+    # Custom Django Applications
     "Accounts",
     "Core",
 ]
 
+# Djoser Authentication Setup
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {},
+}
+
 MIDDLEWARE = [
-    # Corsheaders MiddleWare
     "corsheaders.middleware.CorsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -114,10 +124,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Evento.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# Database configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -125,10 +132,7 @@ DATABASES = {
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -144,41 +148,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
-
-#### JAZZMIN CUSTOMIZATION ########
-
-# Jazzmin settings
+# Jazzmin Admin Panel Customization
 JAZZMIN_SETTINGS = {
     "site_title": "dFinTrack Admin",
     "site_header": "dFinTrack",
     "site_brand": "dFinTrack",
-    # "site_logo": "path_to_your_logo.png",  # Add path to your logo if available
     "welcome_sign": "Welcome to dFinTrack Admin Panel",
     "copyright": "dFinTrack Ltd",
     "search_model": "auth.User",
@@ -198,22 +185,11 @@ JAZZMIN_SETTINGS = {
     "related_modal_active": True,
     "custom_css": None,
     "custom_js": None,
-    
-    ###############
-    # Change view #
-    ###############
-    # Render out the change view as a single form, or in tabs, current options are
-    # - single
-    # - horizontal_tabs (default)
-    # - vertical_tabs
-    # - collapsible
-    # - carousel
     "changeform_format": "vertical_tabs",
-    # override change forms on a per modeladmin basis
     "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "carousel"},
 }
 
-# Jazzmin UI Tweak
+# Jazzmin UI Theme Configuration
 JAZZMIN_UI_TWEAKS = {
     "theme": "default",
     "dark_mode_theme": "darkly",

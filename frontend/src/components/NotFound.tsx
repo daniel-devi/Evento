@@ -1,5 +1,6 @@
 import Header from "./Header";
 import { Box } from "@mui/material";
+import Copyright from "./Copyright";
 
 function NotFound() {
   return (
@@ -29,6 +30,7 @@ function NotFound() {
             </a>
           </div>
         </div>
+        <Copyright/>
       </Box>
     </>
   );

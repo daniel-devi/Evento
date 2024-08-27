@@ -16,28 +16,41 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls.static import static # For Static Files Showing
+from django.conf.urls.static import static
 from django.conf import settings
-# Restframework
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView # Restframework Authentication
-# Accounts
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from Accounts.views import CreateUserView
-# Cores
 from Core.views import HomeView
 
-# URLS 
+# Define URL patterns for the project
 urlpatterns = [
-    path('admin/', admin.site.urls), path("api/token/", TokenObtainPairView.as_view(), name="get_token"), # URL for Token Page
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"), # URL FOR Token Refresh 
-    path("api-auth/", include("rest_framework.urls")), # URLS for Authentication 
-    path("api/user/register/", CreateUserView.as_view(), name="register"), # User Registration
-    path('auth/', include('djoser.urls')), # URL For BASIC User Authentication
-    # Core App Url Path
+    # Django admin interface
+    path('admin/', admin.site.urls),
+    
+    # JWT token endpoints
+    path("api/token/", TokenObtainPairView.as_view(), name="get_token"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
+    
+    # Django Rest Framework authentication URLs
+    path("api-auth/", include("rest_framework.urls")),
+    
+    # User registration endpoint
+    path("api/user/register/", CreateUserView.as_view(), name="register"),
+    
+    # Djoser authentication URLs
+    path('auth/', include('djoser.urls')),
+    
+    # Include URLs from the Core app
     path('Core-Api/', include('Core.urls')),
-    # Accounts App Url Path
+    
+    # Include URLs from the Accounts app
     path('Accounts-Api/', include('Accounts.urls')),
-    path('',HomeView.as_view(), name="home"), # Home Page
+    
+    # Home page
+    path('', HomeView, name="home"),
 ]
-# URLPATTERNS FOR OPENING STATIC FILES AND MEDIA
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve static and media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
