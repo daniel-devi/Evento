@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 # Allow all hosts for development, restrict this in production
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost:5173"]
 
 # Django-Restframework Configuration
 REST_FRAMEWORK = {
@@ -62,6 +62,14 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 CELERY_TASK_ALWAYS_EAGER = False  # Set to True to run tasks synchronously for testing
 
+# LocationField Configuration
+LOCATION_FIELD = {
+    'map.provider': 'google',
+    'map.zoom': 12,
+    'search.provider': 'google',
+    'provider.google.api': '//maps.googleapis.com/maps/api/js?sensor=false',
+}
+
 # Application definition
 INSTALLED_APPS = [
     'jazzmin',  # Admin panel customization
@@ -76,8 +84,9 @@ INSTALLED_APPS = [
     "djoser",  # User authentication API
     "corsheaders",  # Handle CORS
     'allauth',  # Authentication
-    'allauth.account',
-    'django_celery_beat',  # Scheduling async tasks
+    'allauth.account', # Authentication
+    'django_celery_beat',  # Scheduling async tasks 
+    'location_field.apps.DefaultConfig', # Location field for Django
     # Custom Django Applications
     "Accounts",
     "Core",
@@ -157,6 +166,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# # Media files (user-uploaded files)
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

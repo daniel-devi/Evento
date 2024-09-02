@@ -1,5 +1,4 @@
 from django.urls import path
-from Core.views import HomeView
 from .views import *
 
 # URL patterns for the Accounts-related views
