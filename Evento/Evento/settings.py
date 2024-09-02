@@ -118,7 +118,7 @@ ROOT_URLCONF = 'Evento.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -176,34 +176,46 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Jazzmin Admin Panel Customization
 JAZZMIN_SETTINGS = {
-    "site_title": "dFinTrack Admin",
-    "site_header": "dFinTrack",
-    "site_brand": "dFinTrack",
-    "welcome_sign": "Welcome to dFinTrack Admin Panel",
-    "copyright": "dFinTrack Ltd",
+    "site_title": "Evento Admin",
+    "site_header": "Evento",
+    "site_brand": "Evento",
+    "welcome_sign": "Welcome to Evento Admin Panel",
+    "copyright": "Evento Ltd",
     "search_model": "auth.User",
+    # Links to put along the top menu
+    "topmenu_links": [
+
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Support", "url": "https://github.com/daniel-devi/Evento/issues", "new_window": True},
+
+        # model admin to link to (Permissions checked against model)
+        {"model": "auth.User"},
+    ],
+
     "user_avatar": None,
     "show_sidebar": True,
     "navigation_expanded": True,
     "hide_apps": [],
     "hide_models": [],
-    "order_with_respect_to": ["auth", "transactions", "budgets"],
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
-        "transactions.Transaction": "fas fa-money-check-alt",
-        "budgets.Budget": "fas fa-chart-line",
+        "Accounts.UserProfile": "fas fa-user",
+
     },
     "related_modal_active": True,
     "custom_css": None,
     "custom_js": None,
     "changeform_format": "vertical_tabs",
-    "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "carousel"},
+    "changeform_format_overrides": {"auth.user": "carousel", "auth.group": "carousel"},
 }
 
 # Jazzmin UI Theme Configuration
 JAZZMIN_UI_TWEAKS = {
-    "theme": "default",
-    "dark_mode_theme": "darkly",
+    "theme": "cosmo",
+    "dark_mode_theme": "cyborg",
 }

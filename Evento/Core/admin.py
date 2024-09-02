@@ -4,13 +4,13 @@ from .models import Event, Ticket, TicketType, UserTicket, Payment, Order
 # Register your models here.
 class EventAdmin(admin.ModelAdmin):
     # Define which fields to display in the admin list view for Event model
-    list_display = ('name', 'date', 'location', 'price', 'description')
+    list_display = ('title', 'date', 'location', 'organizer', 'description')
 
 admin.site.register(Event, EventAdmin)
 
 class TicketAdmin(admin.ModelAdmin):
     # Define which fields to display in the admin list view for Ticket model
-    list_display = ('event', 'ticket_type', 'quantity')
+    list_display = ('event', 'ticket_type', )
 
 admin.site.register(Ticket, TicketAdmin)
 
@@ -28,12 +28,12 @@ admin.site.register(UserTicket, UserTicketAdmin)
 
 class PaymentAdmin(admin.ModelAdmin):
     # Define which fields to display in the admin list view for Payment model
-    list_display = ('user', 'amount', 'payment_method', 'payment_date', 'payment_status')
+    list_display = ('user', 'payment_method', 'payment_date', 'payment_status')
 
 admin.site.register(Payment, PaymentAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
     # Define which fields to display in the admin list view for Order model
-    list_display = ('user', 'ticket', 'quantity', 'order_date', 'order_status')
+    list_display = ('user', 'created_at', 'updated_at')
 
 admin.site.register(Order, OrderAdmin)

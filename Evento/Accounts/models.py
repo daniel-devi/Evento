@@ -18,12 +18,12 @@ class UserProfile(models.Model):
         null=True,
         default='defaultUserImage.jpeg'
     )
-    phone_number = models.CharField(max_length=20)
-    address = models.CharField(max_length=200)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=10)
-    country = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    zip_code = models.CharField(max_length=10, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         """

@@ -55,6 +55,7 @@ class Ticket(models.Model):
 class UserTicket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='user_tickets')
+    quantity = models.PositiveIntegerField()
     purchase_date = models.DateTimeField(auto_now_add=True)
     is_transferred = models.BooleanField(default=False)
 
@@ -65,12 +66,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    # Use choices for payment status to ensure data consistency
-    payment_status = models.CharField(
-        max_length=50,
-        choices=[('Pending', 'Pending'), ('Completed', 'Completed'), ('Failed', 'Failed')],
-        default='Pending'
-    )
+  
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -85,9 +81,16 @@ PAYMENTTYPE = [
 ]
 
 class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # Use OneToOneField to ensure one payment per order
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=50, choices=PAYMENTTYPE)
+    # Use choices for payment status to ensure data consistency
+    payment_status = models.CharField(
+        max_length=50,
+        choices=[('Pending', 'Pending'), ('Completed', 'Completed'), ('Failed', 'Failed')],
+        default='Pending'
+    )
     payment_date = models.DateTimeField(auto_now_add=True)
     transaction_id = models.CharField(max_length=100)
 
