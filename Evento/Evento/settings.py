@@ -68,6 +68,7 @@ LOCATION_FIELD = {
     'map.zoom': 12,
     'search.provider': 'google',
     'provider.google.api': '//maps.googleapis.com/maps/api/js?sensor=false',
+    'provider.google.map.type': 'ROADMAP',
 }
 
 # Application definition
