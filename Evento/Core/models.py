@@ -2,9 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.templatetags.static import static
 from location_field.models.plain import PlainLocationField
+from django.conf import settings  # Import settings instead of BASE_DIR directly
 import uuid
 import qrcode
 import PIL
+import os
 
 # Define event types as choices for the Event model
 EventType = [
@@ -54,52 +56,6 @@ class Ticket(models.Model):
     def __str__(self):
         return f'{self.ticket_type.name} - {self.event.title} - {self.ticket_id}'
 
-def generate_qr_code(self):
-    """
-    Generate and save a QR code image for a ticket.
-    
-    This function creates a QR code with the ticket ID, adds a logo to it,
-    and saves the resulting image.
-    """
-    # Load and resize the logo
-    logo_path = static('logo.png')
-    LOGO = PIL.Image.open(logo_path)
-    BASEWIDTH = 100
-    
-    # Adjust image size while maintaining aspect ratio
-    width_percent = (BASEWIDTH / float(LOGO.size[0]))
-    height_size = int((float(LOGO.size[1]) * float(width_percent)))
-    logo = LOGO.resize((BASEWIDTH, height_size), PIL.Image.LANCZOS) 
-
-    if hasattr(self, 'ticket'):  # Check if ticket attribute exists
-        # Create QR code instance
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        
-        # Add ticket ID data to QR code
-        qr.add_data(str(self.ticket.ticket_id))
-        qr.make(fit=True)
-        
-        # Generate QR code image with custom colors
-        img = qr.make_image(fill_color="orange", back_color="white")
-        
-        # Calculate position to center the logo on the QR code
-        logo_position = ((img.size[0] - logo.size[0]) // 2, (img.size[1] - logo.size[1]) // 2)
-        
-        # Paste the logo onto the QR code
-        img.paste(logo, logo_position)
-        
-        # Save the QR code image
-        qr_code_path = f'qr_codes/{self.ticket.ticket_id}.png'
-        img.save(qr_code_path)
-        
-        # Save the QR code image path to the model field
-        self.qrcode.save(qr_code_path, img)
-
 class UserTicket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='user_tickets')
@@ -111,8 +67,61 @@ class UserTicket(models.Model):
     def save(self, *args, **kwargs):
         # Generate QR code if it doesn't exist
         if not self.qrcode:
-            self.qrcode = generate_qr_code(self)
+            self.qrcode = self.generate_qr_code(self)
         super().save(*args, **kwargs)  # Call the "real" save() method
+    
+    @staticmethod
+    def generate_qr_code(instance):
+        """
+        Generate and save a QR code image for a ticket.
+        
+        This function creates a QR code with the ticket ID, adds a logo to it,
+        and saves the resulting image.
+        """
+        # Load and resize the logo
+        logo_path = static('images/logo.png')
+        logo_full_path = os.path.join(settings.BASE_DIR, 'static', logo_path.lstrip('/'))  # Fix the path joining
+        LOGO = PIL.Image.open(logo_full_path)
+        BASEWIDTH = 100
+        
+        # Adjust image size while maintaining aspect ratio
+        width_percent = (BASEWIDTH / float(LOGO.size[0]))
+        height_size = int((float(LOGO.size[1]) * float(width_percent)))
+        logo = LOGO.resize((BASEWIDTH, height_size), PIL.Image.LANCZOS) 
+
+        if hasattr(instance, 'ticket'):  # Check if ticket attribute exists
+            # Create QR code instance
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            
+            # Add ticket ID data to QR code
+            qr.add_data(str(instance.ticket.ticket_id))
+            qr.make(fit=True)
+            
+            # Generate QR code image with custom colors
+            img = qr.make_image(fill_color="orange", back_color="white")
+            
+            # Calculate position to center the logo on the QR code
+            logo_position = ((img.size[0] - logo.size[0]) // 2, (img.size[1] - logo.size[1]) // 2)
+            
+            # Paste the logo onto the QR code
+            img.paste(logo, logo_position)
+            
+            # Save the QR code image
+            qr_code_path = f'qr_codes/{instance.ticket.ticket_id}.png'
+            img.save(os.path.join(settings.MEDIA_ROOT, qr_code_path))  # Use MEDIA_ROOT for saving
+            
+            # Save the QR code image path to the model field
+            instance.qrcode.save(qr_code_path, img)
+
+            return qr_code_path    
+        else:
+            # Handle the case where the ticket attribute doesn't exist
+            return None
 
     def __str__(self):
         return f'{self.user.username} - {self.ticket.ticket_id}'

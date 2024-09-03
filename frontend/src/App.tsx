@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // PAGES
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import Logout from "./pages/Logout";
 
 function App() {
   return (
-    <>
+    <QueryClientProvider client={new QueryClient()}>
       {/* BrowserRouter component for handling routing */}
       <BrowserRouter>
         {/* Routes component to define application routes */}
@@ -16,15 +18,17 @@ function App() {
           <Route path="/" element={<HomePage />} />
 
           {/** */}
-          <Route path="login" element={<LoginPage/>} />
+          <Route path="login" element={<LoginPage />} />
 
-          <Route path="register" element={<RegisterPage/>} />
+          <Route path="register" element={<RegisterPage />} />
+
+          <Route path="logout" element={<Logout />} />
 
           {/* Catch-all route for handling 404 Not Found pages */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </QueryClientProvider>
   );
 }
 

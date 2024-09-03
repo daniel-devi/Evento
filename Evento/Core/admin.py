@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, Ticket, TicketType, UserTicket, Payment, Order
+from .models import *
 
 # Register your models here.
 class EventAdmin(admin.ModelAdmin):
@@ -20,11 +20,13 @@ class TicketTypeAdmin(admin.ModelAdmin):
 
 admin.site.register(TicketType, TicketTypeAdmin)
 
+
 class UserTicketAdmin(admin.ModelAdmin):
     # Define which fields to display in the admin list view for UserTicket model
     list_display = ('user', 'ticket', 'quantity')
 
 admin.site.register(UserTicket, UserTicketAdmin)
+
 
 class PaymentAdmin(admin.ModelAdmin):
     # Define which fields to display in the admin list view for Payment model

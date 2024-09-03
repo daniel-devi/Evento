@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { AxiosResponse } from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { Box, TextField } from "@mui/material";
 import api from "../../utils/Api";
+import getObjectValues from "../../utils/GetObjectValue";
 import AlertMessage from "../AlertMessage";
 import Copyright from "../Copyright";
 
@@ -19,38 +21,44 @@ function LoginForm() {
   const REFRESH_TOKEN = "refreshToken";
 
   // Fetch the list of usernames when the component mounts
-  useEffect(() => {
-    api
-      .get("Accounts-api/get-username")
-      .then((response) => {
-        setUserList(response.data);
-      })
-      .catch(() => {
-        // Handle error silently
-      });
-  }, []);
+const fetchUsernames = async () => {
+  const response = await api.get("Accounts-Api/get-usernames");
+  // Set the user list state with the fetched data
+  const newUserList = getObjectValues(response.data);
+  setUserList(newUserList);
+  console.log(userList);
+  if (newUserList.length === 0) {
+    usernameApiCall.refetch(); 
+  }
+};const usernameApiCall = useQuery({queryKey: ['usernames'], queryFn: fetchUsernames}, );
 
   // Function to find a username by email
   const findUsername = async (theEmail: string) => {
     try {
       const res = await api.get(
-        `Accounts-api/get-user-through-email/${theEmail}`
+        `Accounts-Api/get-user-through-email/${theEmail}`
       );
       setUserUsername(res.data[0].username);
       userID = res.data[0].id;
+      console.log(userUsername);
     } catch (error) {
       console.error("Error finding username:", error);
     }
   };
 
+  const useFindUserQuery = (email: string) => {
+    return useQuery({queryKey: ['userEmail'], queryFn: findUsername(email), });
+  };
+
+  
   // Handle form submission for login
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email") as string;
-    await findUsername(email); // Wait for username to be found
-
+    const { queryData, refetch } = useFindUserQuery(email);
     try {
+      const userEmail = await refetch();
       const res: AxiosResponse = await api.post("api/token/", {
         username: userUsername,
         password: data.get("password"),
@@ -70,7 +78,7 @@ function LoginForm() {
       }
     } catch (error: any) {
       // Using 'any' type for error handling
-      if (error.response?.status === 401) {
+      if (error.response?.status === 400) {
         // Check for bad request
         setError(true);
         const foundUser: boolean = Boolean(
@@ -178,5 +186,4 @@ function LoginForm() {
     </Box>
   );
 }
-
 export default LoginForm;
