@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// Importing the AuthenticationRequired component
+import AuthenticationRequired from "./Hooks/AuthenticationRequired";
+import AuthenticatedAlready from "./Hooks/AuthenticationAlready";
 // PAGES
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -18,11 +21,20 @@ function App() {
           <Route path="/" element={<HomePage />} />
 
           {/** */}
-          <Route path="login" element={<LoginPage />} />
+          <Route
+            path="login"
+            element={<AuthenticatedAlready page={() => <LoginPage />} />}
+          />
 
-          <Route path="register" element={<RegisterPage />} />
+          <Route
+            path="register"
+            element={<AuthenticatedAlready page={() => <RegisterPage />} />}
+          />
 
-          <Route path="logout" element={<Logout />} />
+          <Route
+            path="logout"
+            element={<AuthenticationRequired page={() => <Logout />} />}
+          />
 
           {/* Catch-all route for handling 404 Not Found pages */}
           <Route path="*" element={<NotFoundPage />} />
@@ -31,5 +43,4 @@ function App() {
     </QueryClientProvider>
   );
 }
-
 export default App;

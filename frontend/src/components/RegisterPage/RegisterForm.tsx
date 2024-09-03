@@ -3,6 +3,7 @@ import { AxiosResponse } from "axios";
 import { Box, TextField } from "@mui/material";
 import api from "../../utils/Api";
 import { generateUniqueId } from "../../utils/createUID";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../Constants";
 import validatePassword from "../../Hooks/passwordValidation";
 import AlertMessage from "../AlertMessage";
 import Copyright from "../Copyright";
@@ -13,10 +14,6 @@ function RegisterForm() {
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   let userID: number;
-
-  // Constants for localStorage keys
-  const ACCESS_TOKEN = "accessToken";
-  const REFRESH_TOKEN = "refreshToken";
 
   // Handle form submission for login
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AxiosResponse } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Box, TextField } from "@mui/material";
 import api from "../../utils/Api";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../Constants";
 import getObjectValues from "../../utils/GetObjectValue";
 import AlertMessage from "../AlertMessage";
 import Copyright from "../Copyright";
@@ -16,21 +17,21 @@ function LoginForm() {
   const [userUsername, setUserUsername] = useState("");
   let userID: number;
 
-  // Constants for localStorage keys
-  const ACCESS_TOKEN = "accessToken";
-  const REFRESH_TOKEN = "refreshToken";
+
 
   // Fetch the list of usernames when the component mounts
-const fetchUsernames = async () => {
-  const response = await api.get("Accounts-Api/get-usernames");
-  // Set the user list state with the fetched data
-  const newUserList = getObjectValues(response.data);
-  setUserList(newUserList);
-  console.log(userList);
-  if (newUserList.length === 0) {
-    usernameApiCall.refetch(); 
-  }
-};const usernameApiCall = useQuery({queryKey: ['usernames'], queryFn: fetchUsernames}, );
+  const fetchUsernames = async () => {
+    const response = await api.get("Accounts-Api/get-usernames");
+    // Set the user list state with the fetched data
+    const newUserList = getObjectValues(response.data);
+    setUserList(newUserList);
+    if (newUserList.length === 0) {
+      usernameApiCall.refetch(); 
+    }
+  };
+
+  // Use react-query to manage the API call for usernames
+  const usernameApiCall = useQuery({ queryKey: ['usernames'], queryFn: fetchUsernames });
 
   // Function to find a username by email
   const findUsername = async (theEmail: string) => {
@@ -40,25 +41,18 @@ const fetchUsernames = async () => {
       );
       setUserUsername(res.data[0].username);
       userID = res.data[0].id;
-      console.log(userUsername);
     } catch (error) {
       console.error("Error finding username:", error);
     }
   };
 
-  const useFindUserQuery = (email: string) => {
-    return useQuery({queryKey: ['userEmail'], queryFn: findUsername(email), });
-  };
-
-  
   // Handle form submission for login
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email") as string;
-    const { queryData, refetch } = useFindUserQuery(email);
+    await findUsername(email);
     try {
-      const userEmail = await refetch();
       const res: AxiosResponse = await api.post("api/token/", {
         username: userUsername,
         password: data.get("password"),
@@ -68,6 +62,7 @@ const fetchUsernames = async () => {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
         localStorage.setItem("UserID", userID.toString());
+        setError(false);
         setPasswordErrorMessage("");
         setUsernameErrorMessage("");
         setOpen(true);
@@ -77,14 +72,18 @@ const fetchUsernames = async () => {
         }, 3500);
       }
     } catch (error: any) {
-      // Using 'any' type for error handling
+      // Handle different error scenarios
       if (error.response?.status === 400) {
-        // Check for bad request
         setError(true);
         const foundUser: boolean = Boolean(
           userList.find((username) => username === userUsername)
         );
         setUsernameErrorMessage(foundUser ? "" : "User Not Found");
+        setPasswordErrorMessage("Password Incorrect");
+      }
+      if (error.response?.status === 401) {
+        setError(true);
+        setUsernameErrorMessage("");
         setPasswordErrorMessage("Password Incorrect");
       }
     }
@@ -186,4 +185,5 @@ const fetchUsernames = async () => {
     </Box>
   );
 }
+
 export default LoginForm;

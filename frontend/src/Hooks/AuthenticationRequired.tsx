@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import api from "./Api";
-import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants/apiConstants";
-import { useState, useEffect } from "react";
+import api from "../utils/Api";
+import { REFRESH_TOKEN, ACCESS_TOKEN } from "../components/Constants";
+import { useState, useEffect, useCallback } from "react";
 
 type AuthenticationRequiredProps = {
   page: () => React.ReactNode;
@@ -10,11 +10,6 @@ type AuthenticationRequiredProps = {
 function AuthenticationRequired({ page }: AuthenticationRequiredProps) {
   const [isAuthorized, setIsAuthorized] = useState(false); // State to track authorization status
   const navigate = useNavigate(); // Hook to navigate pages
-
-  useEffect(() => {
-    // Call the auth function when the component mounts
-    auth().catch(() => setIsAuthorized(false));
-  }, []);
 
   // Function to refresh the access token using the refresh token
   const refreshToken = async () => {
@@ -37,7 +32,7 @@ function AuthenticationRequired({ page }: AuthenticationRequiredProps) {
   };
 
   // Function to check the authentication status asynchronously
-  const auth = async () => {
+  const auth = useCallback(async () => {
     const token = localStorage.getItem(ACCESS_TOKEN); // Get the access token from local storage
     if (!token) {
       setIsAuthorized(false);
@@ -53,8 +48,13 @@ function AuthenticationRequired({ page }: AuthenticationRequiredProps) {
     } else {
       setIsAuthorized(true); // If the token is still valid, authorize the user
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Call the auth function when the component mounts
+    auth().catch(() => setIsAuthorized(false));
+  }, [auth]); // Added auth as a dependency
+
   return isAuthorized ? page : navigate("/login"); // Render the page if authorized, otherwise navigate to login
 }
-
 export default AuthenticationRequired;
