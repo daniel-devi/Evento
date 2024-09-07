@@ -11,7 +11,7 @@ import Copyright from "../Copyright";
 function RegisterForm() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState<string>("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   let userID: number;
 
@@ -22,14 +22,13 @@ function RegisterForm() {
 
     const userUsername = "User" + generateUniqueId();
 
-    const passwordValue = data.get("password");
+    const passwordValue = data.get("password")?.toString();
     if (
       passwordValue &&
-      typeof passwordValue === "string" &&
-      validatePassword(passwordValue, setPasswordErrorMessage)
+      validatePassword({setErrorMessage: setUsernameErrorMessage,})
     ) {
       try {
-        const res: AxiosResponse = await api.post("api/user/register", {
+        const res: AxiosResponse = await api.post("api/user/register/", {
           username: userUsername,
           email: data.get("email"),
           password: passwordValue,
@@ -56,9 +55,8 @@ function RegisterForm() {
         }
       }
     }
-  };  return (
-    <Box
-      className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
+
+  };  return (    <Box      className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
       sx={{
         bgcolor: "background.default",
         color: "text.primary",
@@ -152,5 +150,4 @@ function RegisterForm() {
     </Box>
   );
 }
-
 export default RegisterForm;

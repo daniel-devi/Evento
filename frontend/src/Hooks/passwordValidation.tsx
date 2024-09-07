@@ -1,17 +1,22 @@
 import React from "react";
 
+// Define the props for the validatePassword function
 type validatePasswordProps = {
   password: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  validatePassword: () => boolean;
 };
 
-function validatePassword({
-  password,
+const validatePassword = ({
   setErrorMessage,
-}: validatePasswordProps): boolean {
+  password
+}: validatePasswordProps): boolean => {
   // Default minimum and maximum password length
-  const { minLength = 8, maxLength = 128 } = {};
-
+  const minLength = 8;
+  const maxLength = 25;
+  
+  // Ensure password is a string
+  password = password.toString();
   let isValid = true;
 
   if (password) {
@@ -45,5 +50,6 @@ function validatePassword({
   }
 
   return isValid;
-}
+};
+
 export default validatePassword;

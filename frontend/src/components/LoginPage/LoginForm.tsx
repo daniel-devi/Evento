@@ -9,7 +9,7 @@ import AlertMessage from "../AlertMessage";
 import Copyright from "../Copyright";
 
 function LoginForm() {
-  const [userList, setUserList] = useState([]);
+  const [userList, setUserList] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
@@ -23,7 +23,7 @@ function LoginForm() {
   const fetchUsernames = async () => {
     const response = await api.get("Accounts-Api/get-usernames");
     // Set the user list state with the fetched data
-    const newUserList = getObjectValues(response.data);
+    const newUserList: string[] = getObjectValues(response.data);
     setUserList(newUserList);
     if (newUserList.length === 0) {
       usernameApiCall.refetch(); 

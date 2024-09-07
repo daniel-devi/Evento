@@ -23,12 +23,12 @@ function App() {
           {/** */}
           <Route
             path="login"
-            element={<AuthenticatedAlready page={() => <LoginPage />} />}
+            element={<AuthenticatedAlready page={<LoginPage />} />}
           />
 
           <Route
             path="register"
-            element={<AuthenticatedAlready page={() => <RegisterPage />} />}
+            element={<AuthenticatedAlready page={<RegisterPage />} />}
           />
 
           <Route
